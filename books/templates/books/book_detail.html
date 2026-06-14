@@ -1,0 +1,22 @@
+{% extends 'books/base.html' %}
+{% load book_filters %}
+
+{% block title %}{{ book.title }}{% endblock %}
+
+{% block content %}
+    <div class="book-card" style="width: auto; text-align: left;">
+        <h1>{{ book.title }}</h1>
+        <p><strong>Автор:</strong> {{ book.author|default:"Не указан" }}</p>
+        <p><strong>Цена:</strong> <span class="price">{{ book.price|default:"Не указана" }} ₽</span></p>
+        <p><strong>Ценовая категория:</strong> {{ book.price|price_level }}</p>
+        <p><strong>Возраст книги:</strong> {{ book.year|book_age }}</p>
+        <p><strong>Город:</strong> {{ book.city|default:"Не указан" }}</p>
+        <p><strong>Магазин:</strong> {{ book.source|default:"Не указан" }}</p>
+        <p><strong>ISBN:</strong> {{ book.isbn|default:"Не указан" }}</p>
+        <p><strong>Издательство:</strong> {{ book.publisher|default:"Не указано" }}</p>
+        <p><strong>Год издания:</strong> {{ book.year|default:"Не указан" }}</p>
+        <p><strong>Жанр:</strong> {{ book.genre|default:"Не указан" }}</p>
+        <p><strong>Дата добавления:</strong> {{ book.created_at|date:"d.m.Y" }}</p>
+    </div>
+    <a href="{% url 'book_list' %}" class="back-link">← Назад к списку</a>
+{% endblock %}

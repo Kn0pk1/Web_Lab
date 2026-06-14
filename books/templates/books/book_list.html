@@ -1,0 +1,21 @@
+{% extends 'books/base.html' %}
+{% load book_filters %}
+
+{% block title %}Список книг{% endblock %}
+
+{% block content %}
+    <h1>Каталог книг</h1>
+    <div class="book-grid">
+        {% for book in books %}
+            <div class="book-card">
+                <h3>{{ book.title|truncatechars:50 }}</h3>
+                <p>Автор: {{ book.author|default:"Не указан" }}</p>
+                <p class="price">{{ book.price|default:"—" }} ₽</p>
+                <p>Ценовая категория: {{ book.price|price_level }}</p>
+                <p>Год издания: {{ book.year|book_age }}</p>
+                <p>ISBN: {{ book.isbn_clean|hide_isbn }}</p>
+                <a href="{% url 'book_detail' book.id %}">Подробнее</a>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
