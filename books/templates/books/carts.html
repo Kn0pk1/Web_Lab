@@ -7,7 +7,7 @@
 
 <div class="cart-list">
     {% for cart in carts %}
-    <div class="cart-card">
+    <div class="cart-card {% if not cart.is_active %}inactive-cart-card{% endif %}">
         <h3>Корзина #{{ cart.id }}</h3>
         <p><strong>Покупатель:</strong> {{ cart.customer.name }}</p>
         <p><strong>Дата создания:</strong> {{ cart.created_at|date:"d.m.Y H:i" }}</p>
@@ -20,12 +20,14 @@
         </p>
         <p><strong>Товары:</strong></p>
         <ul>
-            {% for book in cart.books.all %}
-                <li>{{ book.title }}</li>
+            {% for item in cart.items.all %}
+                <li>{{ item.book.title }} — {{ item.quantity }} шт. = {{ item.total_price|floatformat:2 }} ₽</li>
             {% empty %}
                 <li>Нет товаров</li>
             {% endfor %}
         </ul>
+        <p><strong>Количество единиц:</strong> {{ cart.total_items_count }}</p>
+        <p><strong>Итоговая стоимость:</strong> {{ cart.total_price|floatformat:2 }} ₽</p>
     </div>
     {% empty %}
         <p>Нет ни одной корзины.</p>

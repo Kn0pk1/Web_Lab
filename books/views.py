@@ -27,5 +27,5 @@ def book_detail(request, book_id):
     return render(request, 'books/book_detail.html', {'book': book})
 
 def carts_list(request):
-    carts = Cart.objects.all().select_related('customer').prefetch_related('books')
+    carts = Cart.objects.all().select_related('customer').prefetch_related('items__book')
     return render(request, 'books/carts.html', {'carts': carts})

@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator
 
 class Book(models.Model):
     title = models.CharField(max_length=300, verbose_name="Название")
@@ -39,7 +40,6 @@ class Cart(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="carts", verbose_name="Покупатель")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
     is_active = models.BooleanField(default=True, verbose_name="Активна")
-    books = models.ManyToManyField(Book, verbose_name="Товары")
 
     class Meta:
         verbose_name = "Корзина"
@@ -64,3 +64,29 @@ class Cart(models.Model):
 
     def __str__(self):
         return f"Корзина #{self.id} - {self.customer.name}"
+
+    def total_items_count(self):
+        return sum(item.quantity for item in self.items.all())
+
+    def total_price(self):
+        """Итоговая стоимость всей корзины"""
+        return sum(item.book.price * item.quantity for item in self.items.all() if item.book.price)
+
+class CartItem(models.Model):
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items', verbose_name="Корзина")
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, verbose_name="Книга")
+    quantity = models.PositiveIntegerField(default=1, verbose_name="Количество", validators=[MinValueValidator(1)])
+
+    class Meta:
+        verbose_name = "Товар в корзине"
+        verbose_name_plural = "Товары в корзинах"
+        unique_together = ['cart', 'book']
+
+    def __str__(self):
+        return f"{self.book.title} x{self.quantity}"
+
+    def total_price(self):
+        """Стоимость одной позиции в корзине"""
+        if self.book.price:
+            return self.book.price * self.quantity
+        return 0
